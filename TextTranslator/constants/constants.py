@@ -1,1 +1,1 @@
-east_path = 'C:/Users/dt224910/PycharmProjects/TextTranslator/models/frozen_east_text_detection.pb'
+east_path = 'D:\\COLLEGE WORK\\SEM 5\\Mini Project Sem 5\\Resume Ranker\\Sem 5 mini project\\resume\\TextTranslator\\models\\frozen_east_text_detection.pb'

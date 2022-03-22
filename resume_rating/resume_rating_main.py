@@ -1,30 +1,35 @@
 import os
-from flask import Flask, flash, request, redirect, render_template,url_for
+from flask import Flask, flash, request, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 from constants import file_constants as cnst
 from processing import resume_matcher
 from utils import file_utils
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','docx'])
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'docx'])
 app = Flask(__name__)
 app.secret_key = "secret key"
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['UPLOAD_FOLDER'] = cnst.UPLOAD_FOLDER
 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/')
 def upload_form():
     return render_template('resume_loader.html')
 
+
 @app.route('/failure')
 def failure():
-   return 'No files were selected'
+    return 'No files were selected'
+
 
 @app.route('/success/<name>')
 def success(name):
-   return 'Files %s has been selected' %name
+    return 'Files %s has been selected' % name
+
 
 @app.route('/', methods=['POST', 'GET'])
 def check_for_file():
@@ -48,24 +53,26 @@ def check_for_file():
             filename = secure_filename(file.filename)
             abs_paths = []
             # filename = file.filename
-            req_document = cnst.UPLOAD_FOLDER+'/'+filename
+            req_document = cnst.UPLOAD_FOLDER+'\\'+filename
             print(filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             # file.save(app.config['UPLOAD_FOLDER'])
             for resumefile in resume_files:
                 filename = resumefile.filename
-                abs_paths.append(cnst.UPLOAD_FOLDER + '/' + filename)
+                abs_paths.append(cnst.UPLOAD_FOLDER + '\\' + filename)
                 print(filename)
-                resumefile.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+                resumefile.save(os.path.join(
+                    app.config['UPLOAD_FOLDER'], filename))
                 # resumefile.save(app.config['UPLOAD_FOLDER'])
-            result = resume_matcher.process_files(req_document,abs_paths)
+            result = resume_matcher.process_files(req_document, abs_paths)
             for file_path in abs_paths:
-               file_utils.delete_file(file_path)
+                file_utils.delete_file(file_path)
 
             return render_template("resume_results.html", result=result)
         else:
             flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
             return redirect(request.url)
 
+
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run(debug=True)
